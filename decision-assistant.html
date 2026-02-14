@@ -197,26 +197,8 @@
 
         /* Input Area */
         .input-area {
-            padding: 16px 20px;
+            padding: 20px;
             border-top: 1px solid var(--border);
-            background: #fff;
-        }
-
-        .question-prompt {
-            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-            border-left: 4px solid var(--primary);
-            padding: 12px 16px;
-            margin-bottom: 12px;
-            border-radius: 0 8px 8px 0;
-            font-size: 0.95rem;
-            color: var(--text);
-        }
-
-        .question-prompt .label {
-            font-size: 0.8rem;
-            color: var(--primary);
-            font-weight: 600;
-            margin-bottom: 4px;
         }
 
         .input-wrapper {
@@ -534,10 +516,6 @@
                 <div class="chat-messages" id="chatMessages">
                     <!-- Messages will be inserted here -->
                 </div>
-                <div class="question-prompt" id="questionPrompt" style="display: none;">
-                    <div class="label">📌 当前问题</div>
-                    <div id="questionText"></div>
-                </div>
                 <div class="input-area">
                     <div class="input-wrapper">
                         <input type="text" id="userInput" placeholder="请描述您的决策困境..." disabled>
@@ -657,6 +635,8 @@
 - 买房还是租房？怕吃亏又怕后悔
 - 投资还是存钱？跟风操作总是被套
 
+**别再凭感觉做决定！**
+
 ---
 
 ### 💡 我能帮你做什么
@@ -703,39 +683,12 @@
             });
         });
 
-        // Extract question from message and show in prompt
-        function extractQuestion(content) {
-            // Look for patterns like "请问..." or "请回答..."
-            const questionMatch = content.match(/([请问请回答您目前.*?\？])/);
-            if (questionMatch) {
-                return questionMatch[0];
-            }
-            return null;
-        }
-
         function addMessage(type, title, content) {
             const messages = document.getElementById('chatMessages');
             const msgDiv = document.createElement('div');
             msgDiv.className = `message ${type}`;
             msgDiv.innerHTML = `<div class="message-title">${title}</div><div class="message-content">${content}</div>`;
             messages.appendChild(msgDiv);
-
-            // Extract and show question in prompt
-            const question = extractQuestion(content);
-            if (question) {
-                const prompt = document.getElementById('questionPrompt');
-                const promptText = document.getElementById('questionText');
-                prompt.style.display = 'block';
-                promptText.textContent = question;
-
-                // Update input placeholder
-                if (question.includes('请回答')) {
-                    document.getElementById('userInput').placeholder = '请回答上述问题...';
-                } else {
-                    document.getElementById('userInput').placeholder = '请描述您的决策困境...';
-                }
-            }
-
             messages.scrollTop = messages.scrollHeight;
         }
 
