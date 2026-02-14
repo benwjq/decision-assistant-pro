@@ -1,0 +1,8 @@
+{
+  "buildCommand": "",
+  "outputDirectory": ".",
+  "framework": "static",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/decision-assistant.html" }
+  ]
+}

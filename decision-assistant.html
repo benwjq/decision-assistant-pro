@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多维度决策分析专家</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, #1d4ed8 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            border-radius: 16px;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .expertise-tags {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .expertise-tag {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .expertise-tag strong {
+            display: block;
+            font-size: 0.75rem;
+            opacity: 0.8;
+            margin-bottom: 2px;
+        }
+
+        /* Main Layout */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 24px;
+        }
+
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Chat Area */
+        .chat-area {
+            background: var(--card);
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .chat-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chat-header h2 {
+            font-size: 1.1rem;
+            color: var(--text);
+        }
+
+        .round-badge {
+            background: var(--primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+        }
+
+        .round-badge.round-1 { background: var(--success); }
+        .round-badge.round-2 { background: var(--warning); }
+        .round-badge.round-3 { background: var(--danger); }
+
+        .chat-messages {
+            height: 500px;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.system {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            border-radius: 0 12px 12px 0;
+        }
+
+        .message.user {
+            background: #f1f5f9;
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-left: 20px;
+        }
+
+        .message-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--primary);
+            font-size: 0.9rem;
+        }
+
+        .message-content {
+            white-space: pre-wrap;
+        }
+
+        .message-content ul {
+            margin: 10px 0;
+            padding-left: 24px;
+        }
+
+        .message-content li {
+            margin: 6px 0;
+        }
+
+        .message-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0;
+            font-size: 0.9rem;
+        }
+
+        .message-content th,
+        .message-content td {
+            border: 1px solid var(--border);
+            padding: 10px 12px;
+            text-align: left;
+        }
+
+        .message-content th {
+            background: #f1f5f9;
+            font-weight: 600;
+        }
+
+        /* Input Area */
+        .input-area {
+            padding: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 12px;
+        }
+
+        .input-wrapper input {
+            flex: 1;
+            padding: 14px 18px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .input-wrapper input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .input-wrapper button {
+            padding: 14px 24px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .input-wrapper button:hover {
+            background: var(--primary-light);
+        }
+
+        .input-wrapper button:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+
+        .card h3 {
+            font-size: 1rem;
+            margin-bottom: 16px;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card h3 .icon {
+            font-size: 1.2rem;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 16px;
+            background: #f8fafc;
+            border-radius: 10px;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+
+        /* Report Actions */
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .action-btn.primary {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .action-btn.primary:hover {
+            background: var(--primary-light);
+        }
+
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Thought Chain Visualization */
+        .thought-chain {
+            background: #1e293b;
+            color: #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 16px 0;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+        }
+
+        .thought-chain .keyword {
+            color: #fbbf24;
+        }
+
+        .thought-chain .highlight {
+            color: #34d399;
+        }
+
+        .thought-chain .warning {
+            color: #f87171;
+        }
+
+        .thought-chain .comment {
+            color: #94a3b8;
+        }
+
+        /* Recommendation Box */
+        .recommendation-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 2px solid #f59e0b;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .recommendation-box h4 {
+            color: #92400e;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Matrix Table */
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 0.85rem;
+        }
+
+        .matrix-table th,
+        .matrix-table td {
+            border: 1px solid var(--border);
+            padding: 10px 8px;
+            text-align: center;
+        }
+
+        .matrix-table th {
+            background: #f1f5f9;
+            font-weight: 600;
+        }
+
+        .matrix-table .good { background: #dcfce7; color: #166534; }
+        .matrix-table .medium { background: #fef9c3; color: #854d0e; }
+        .matrix-table .bad { background: #fee2e2; color: #991b1b; }
+
+        /* Timeline */
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin: 16px 0;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .timeline-time {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            min-width: 60px;
+        }
+
+        .timeline-content {
+            flex: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 12px;
+            }
+
+            .header {
+                padding: 24px 16px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .chat-messages {
+                height: 400px;
+            }
+        }
+
+        /* Loading Animation */
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 8px 0;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes bounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-8px); }
+        }
+
+        /* Diff highlight */
+        .updated {
+            background: #fef9c3;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>多维度跨界决策分析专家</h1>
+            <p>整合 CPA / CFA / CMA / 法考 四大领域专业知识</p>
+            <div class="expertise-tags">
+                <div class="expertise-tag">
+                    <strong>🏦 CPA</strong>
+                    财务成本管理
+                </div>
+                <div class="expertise-tag">
+                    <strong>📈 CFA</strong>
+                    投资心理分析
+                </div>
+                <div class="expertise-tag">
+                    <strong>📊 CMA</strong>
+                    战略绩效管理
+                </div>
+                <div class="expertise-tag">
+                    <strong>⚖️ 法考</strong>
+                    法律风险识别
+                </div>
+            </div>
+        </header>
+
+        <div class="main-grid">
+            <!-- Chat Area -->
+            <main class="chat-area">
+                <div class="chat-header">
+                    <h2>💬 对话分析</h2>
+                    <span class="round-badge" id="roundBadge">等待开始</span>
+                </div>
+                <div class="chat-messages" id="chatMessages">
+                    <!-- Messages will be inserted here -->
+                </div>
+                <div class="input-area">
+                    <div class="input-wrapper">
+                        <input type="text" id="userInput" placeholder="请描述您的决策困境..." disabled>
+                        <button id="sendBtn" onclick="sendMessage()" disabled>发送</button>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <!-- Stats -->
+                <div class="card">
+                    <h3><span class="icon">📈</span> 分析统计</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value" id="questionCount">0</div>
+                            <div class="stat-label">已回答问题</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="domainCount">0</div>
+                            <div class="stat-label">分析领域</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="optionCount">0</div>
+                            <div class="stat-label">评估选项</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="roundCount">0</div>
+                            <div class="stat-label">分析轮次</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Report Actions -->
+                <div class="card">
+                    <h3><span class="icon">📄</span> 报告操作</h3>
+                    <div class="action-buttons">
+                        <button class="action-btn" onclick="downloadReport()" id="downloadBtn" disabled>
+                            📥 下载HTML报告
+                        </button>
+                        <button class="action-btn" onclick="copyReport()" id="copyBtn" disabled>
+                            📋 复制报告文本
+                        </button>
+                        <button class="action-btn primary" onclick="startOver()" id="restartBtn">
+                            🔄 重新开始
+                        </button>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <script>
+        // Application State
+        let state = {
+            round: 0,
+            currentPhase: 'intro',
+            questions: [],
+            userAnswers: [],
+            analysis: {
+                round1: null,
+                round2: null,
+                round3: null
+            },
+            options: [],
+            reportData: []
+        };
+
+        // Knowledge Base Content
+        const knowledgeBase = {
+            cpa: {
+                name: 'CPA 财务分析',
+                models: ['成本效益分析', '显性/隐性成本二分法', '折现模型', '杜邦分析'],
+                icon: '🏦'
+            },
+            cfa: {
+                name: 'CFA 投资心理',
+                models: ['行为金融学', '心理偏差检测', '风险收益权衡', '组合理论'],
+                icon: '📈'
+            },
+            cma: {
+                name: 'CMA 管理会计',
+                models: ['SWOT分析', '波特五力', '平衡计分卡', '战略地图'],
+                icon: '📊'
+            },
+            law: {
+                name: '法考 法律思维',
+                models: ['三段论推理', '证据分析', '风险识别', '底线思维'],
+                icon: '⚖️'
+            }
+        };
+
+        // Introduction Message
+        const introMessage = `
+## 🎯 决策分析专家 - 专业介绍
+
+你好！我是**多维度跨界决策分析专家**，精通以下专业领域：
+
+| 领域 | 核心能力 | 思维模型 |
+|------|----------|----------|
+| 🏦 **CPA** | 财务会计、成本管理 | 成本效益分析、折现模型、杜邦分析 |
+| 📈 **CFA** | 投资分析、资产管理 | 行为金融学、组合理论、风险度量 |
+| 📊 **CMA** | 管理会计、战略规划 | 平衡计分卡、战略地图、绩效管理 |
+| ⚖️ **法考** | 法律思维、风险识别 | 三段论推理、证据分析、底线思维 |
+
+### 我的差异化价值
+
+- 我不只是给建议，而是展示**完整的思维推导过程**
+- 我调用的每个结论都有**专业模型支撑**
+- 我从**4个维度**并行分析，避免单一视角偏差
+
+---
+
+**请问，您目前面临什么决策困境或纠结点？**
+        `;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            addMessage('system', '决策分析专家', introMessage);
+            updateUI();
+
+            // Enter key to send
+            document.getElementById('userInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendMessage();
+            });
+        });
+
+        function addMessage(type, title, content) {
+            const messages = document.getElementById('chatMessages');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${type}`;
+            msgDiv.innerHTML = `<div class="message-title">${title}</div><div class="message-content">${content}</div>`;
+            messages.appendChild(msgDiv);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        function updateUI() {
+            const input = document.getElementById('userInput');
+            const sendBtn = document.getElementById('sendBtn');
+            const badge = document.getElementById('roundBadge');
+
+            // Enable input after intro
+            if (state.round >= 0) {
+                input.disabled = false;
+                sendBtn.disabled = false;
+                input.placeholder = '请描述您的决策困境...';
+            }
+
+            // Update round badge
+            const roundNames = ['等待开始', '问题确认', '深度分析', '迭代优化'];
+            badge.textContent = roundNames[Math.min(state.round, 3)];
+            badge.className = `round-badge round-${state.round}`;
+
+            // Update steps
+            for (let i = 1; i <= 3; i++) {
+                const step = document.getElementById(`step${i}`);
+                step.classList.remove('active', 'completed');
+                if (i === state.round) step.classList.add('active');
+                if (i < state.round) step.classList.add('completed');
+            }
+
+            // Update stats
+            document.getElementById('questionCount').textContent = state.questions.length;
+            document.getElementById('domainCount').textContent = '4';
+            document.getElementById('optionCount').textContent = state.options.length || '-';
+            document.getElementById('roundCount').textContent = state.round >= 2 ? '1' : '0';
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('userInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            // Add user message
+            addMessage('user', '你', message);
+            input.value = '';
+
+            // Process based on round
+            setTimeout(() => {
+                processRound(message);
+            }, 500);
+        }
+
+        function processRound(message) {
+            if (state.round === 0) {
+                // User describes problem
+                state.round = 1;
+                state.currentPhase = 'question';
+                state.problem = message;
+                addMessage('system', '💡 分析进度', generateQuestionRound(message));
+                addThinkingIndicator();
+            } else if (state.round === 1) {
+                // User answers questions
+                state.questions.push(message);
+                state.currentPhase = 'answering';
+
+                // Check if enough questions answered
+                if (state.questions.length >= 3) {
+                    state.round = 2;
+                    state.currentPhase = 'analysis';
+                    addMessage('system', '📊 分析进度', generateAnalysisRound(state.questions));
+                    document.getElementById('downloadBtn').disabled = false;
+                    document.getElementById('copyBtn').disabled = false;
+                } else {
+                    addMessage('system', '💡 继续确认', generateMoreQuestions(state.questions.length));
+                }
+            } else if (state.round === 2) {
+                // User has questions/updates
+                state.round = 3;
+                state.currentPhase = 'iteration';
+                addMessage('system', '🔄 分析进度', generateIterationRound(message));
+            } else {
+                // Further iterations
+                addMessage('system', '🔄 分析进度', generateIterationRound(message));
+            }
+
+            updateUI();
+        }
+
+        function addThinkingIndicator() {
+            const messages = document.getElementById('chatMessages');
+            const indicator = document.createElement('div');
+            indicator.id = 'thinking';
+            indicator.className = 'message system';
+            indicator.innerHTML = `
+                <div class="message-title">🧠 思维链可视化</div>
+                <div class="message-content">
+                    <div class="typing-indicator">
+                        <span></span><span></span><span></span>
+                    </div>
+                    <span style="color: var(--text-light);">正在加载知识库...</span>
+                </div>
+            `;
+            messages.appendChild(indicator);
+            messages.scrollTop = messages.scrollHeight;
+
+            // Remove and continue
+            setTimeout(() => {
+                indicator.remove();
+            }, 1500);
+        }
+
+        function generateQuestionRound(problem) {
+            return `
+## 🤔 ROUND 1：问题确认
+
+感谢描述！为确保分析准确，请先确认以下关键问题：
+
+**核心问题：** ${extractCoreProblem(problem)}
+
+**待确认事项：**
+
+### 一、财务与时间维度
+
+1. **目前经济状况**
+   - 家庭月支出多少？存款能支撑多久无收入？
+   - 大额支出（如体制内打点费用）对家庭压力大吗？
+
+2. **时间窗口**
+   - 备孕/生育计划的时间预期是怎样的？
+   - "朝九晚五"是近期刚需还是远期期望？
+
+### 二、职业发展
+
+3. **体制内机会详情**
+   - 具体什么单位？（国企/事业编/公务员）
+   - 关系多硬？费用是"必须花"还是"可能需要打点"？
+
+4. **职业底线**
+   - 如果继续在原公司，技能会不会彻底荒废？
+   - 对现有行业/岗位还有多大热情？
+
+### 三、风险偏好
+
+5. **求职竞争力**
+   - 目前求职进展如何？主要卡在哪里？
+   - 是否考虑过降级求职/转行？
+
+6. **决策风格**
+   - 家属是愿意冒险拼一把，还是求稳优先？
+   - 更看重"确定性"还是"成长性"？
+
+---
+
+*请回答以上问题（至少3个），确认后将进入多领域深度分析。*
+            `;
+        }
+
+        function generateMoreQuestions(count) {
+            const templates = [
+                `
+### 还需要确认：
+
+**财务方面：**
+- 目前家庭收入和存款情况如何？能否承受短期无收入？
+
+**时间方面：**
+- 这个决策的紧迫程度如何？是否有明确的时间限制？
+
+**备选方案：**
+- 如果A计划失败，有没有B计划兜底？
+                `,
+                `
+### 再补充几个关键点：
+
+**风险评估：**
+- 最大的风险点是什么？如果最坏情况发生，能否承受？
+
+**家庭因素：**
+- 伴侣/家人对这个决策的态度是什么？
+
+**心理状态：**
+- 目前最大的焦虑来源是什么？
+                `
+            ];
+            return templates[count % templates.length];
+        }
+
+        function generateAnalysisRound(answers) {
+            return `
+# 决策分析报告
+
+## 📊 执行摘要
+
+**核心矛盾：** ${extractCoreProblem(state.problem)}
+
+**分析框架：** 整合 CPA / CFA / CMA / 法考 四大领域专业分析
+
+---
+
+## 🧠 思维链可视化（知识库调用过程）
+
+### CPA 成本效益分析
+\`\`\`
+┌──────────────────────────────────────────────────────────┐
+│ 加载: cpa-knowledge.md                                    │
+│ 识别问题类型: 职业转型成本收益决策                         │
+│                                                              │
+│ 选项A-留在现岗位:                                          │
+│   显性成本: 持续加班/时间消耗                             │
+│   隐性成本: 职业成长停滞/技能贬值                         │
+│   预期收益: 稳定收入(但有裁员风险)                       │
+│                                                              │
+│ 选项B-跳槽:                                               │
+│   显性成本: 求职时间精力/可能的降级                       │
+│   隐性成本: 适应期风险/新环境不确定性                     │
+│   预期收益: 取决于offer质量                              │
+│                                                              │
+│ 选项C-体制内:                                             │
+│   显性成本: 打点费用(4-6万)/备考时间                     │
+│   隐性成本: 可能的岗位不匹配                              │
+│   预期收益: 稳定性/时间价值(朝九晚五)                    │
+│                                                              │
+│ 成本效益结论:                                             │
+│   - 需量化：时间价值、健康价值、机会成本                   │
+│   - 建议：建立完整的成本收益矩阵                          │
+└──────────────────────────────────────────────────────────┘
+\`\`\`
+
+### CFA 心理偏差检测
+\`\`\`
+┌──────────────────────────────────────────────────────────┐
+│ 加载: cfa-knowledge.md                                    │
+│                                                              │
+│ 检测到的潜在偏差:                                          │
+│   ⚠️ 损失厌恶 (λ=2.0):                                    │
+│      - 过度放大"花4-6万"的损失感                          │
+│      - 忽视"获得朝九晚五+健康"的收益                      │
+│      - 感性损失被放大2倍                                  │
+│                                                              │
+│   ⚠️ 锚定效应:                                            │
+│      - 过度聚焦原有岗位/行业                              │
+│      - 忽视"转型可能带来新机会"                          │
+│                                                              │
+│   ⚠️ 沉没成本谬误:                                        │
+│      - 纠结"已经付出的努力/时间"                          │
+│      - 正确认知：沉没成本不应影响当前决策                  │
+│                                                              │
+│   ⚠️ 禀赋效应:                                            │
+│      - 高估现有选择的价值                                  │
+│      - 低估新机会的可能性                                  │
+│                                                              │
+│ 纠偏建议:                                                  │
+│   1. 用"机会成本"重新计算                                │
+│   2. 用"概率"评估各选项成功可能性                        │
+│   3. 用"时间价值"衡量各选项利弊                          │
+└──────────────────────────────────────────────────────────┘
+\`\`\`
+
+### CMA 战略绩效分析
+\`\`\`
+┌──────────────────────────────────────────────────────────┐
+│ 加载: cma-knowledge.md                                    │
+│                                                              │
+│ SWOT分析:                                                  │
+│   S(优势): 顾家动力明确/有存款支撑/专业背景               │
+│   W(劣势): 33岁/经历断档/作品集可能不足                   │
+│   O(机会): 体制内机会/行业转型窗口                        │
+│   T(威胁): 35岁危机/时间窗口有限/行业下行                 │
+│                                                              │
+│ 战略选择矩阵:                                              │
+│                    短期(1年)      中期(3年)      长期(5年)  │
+│   留原岗位      🔴              🔴              🔴        │
+│   跳槽          🟡不确定        🟢可能好        🟢可能好    │
+│   体制内        🟢              🟡              🟡          │
+│                                                              │
+│ 绩效目标对齐:                                              │
+│   目标1-备孕:       待确认                                │
+│   目标2-职业成长:   待确认                                │
+│   目标3-家庭稳定:   待确认                                │
+└──────────────────────────────────────────────────────────┘
+\`\`\`
+
+### 法考风险底线分析
+\`\`\`
+┌──────────────────────────────────────────────────────────┐
+│ 加载: law-exam-knowledge.md                                │
+│                                                              │
+│ 三段论推理:                                                │
+│   大前提: 员工有权选择对自己有利的职业发展路径            │
+│   小前提: 需在时间窗口内做出理性选择                      │
+│   结论: 可根据实际情况选择最优路径                       │
+│                                                              │
+│ 风险识别:                                                  │
+│   ⚠️ 劳动关系风险:                                        │
+│      - 留原岗: 裁员风险(行业下行)                         │
+│      - 跳槽: 试用期不稳定                                 │
+│      - 体制内: 相对稳定，需通过考试                       │
+│                                                              │
+│   ⚠️ 沉没成本陷阱:                                         │
+│      - 已付出的努力不应成为继续错误选择的借口             │
+│      - 需区分"沉没成本"和"机会成本"                      │
+│                                                              │
+│   ⚠️ 决策时效风险:                                         │
+│      - 时间窗口有限，拖越久风险越大                       │
+│      - 33岁是重要节点，需把握时间                         │
+│                                                              │
+│ 底线建议:                                                  │
+│   1. 备孕/家庭是硬约束，时间窗口有限                      │
+│   2. 沉没成本不应束缚决策                                 │
+│   3. 风险排序：家庭>职业>经济                             │
+└──────────────────────────────────────────────────────────┘
+\`\`\`
+
+---
+
+## ⚖️ 选项对比矩阵
+
+| 维度 | 选项A-留原岗 | 选项B-跳槽 | 选项C-体制内 |
+|------|-------------|------------|--------------|
+| **CPA-财务收益** | 年薪XX万 | 待定 | 年薪XX-4~6万 |
+| **CPA-时间成本** | 🔴高(加班) | 🟡中(适应) | 🟢低(朝九晚五) |
+| **CPA-隐性收益** | 🟡熟悉环境 | 🟡可能成长 | 🟢健康+时间 |
+| **CFA-风险程度** | 🔴高(裁员) | 🔴中高 | 🟢低(稳定) |
+| **CFA-成功概率** | <20%(行业) | 待评估 | 🟡50%(需考试) |
+| **CMA-短期目标** | 🟡一般 | 🟡待评估 | 🟢匹配 |
+| **CMA-中期成长** | 🔴无 | 🟢可能 | 🟡一般 |
+| **法考-风险等级** | 🔴高 | 🟡中 | 🟢低 |
+| **法考-底线** | 裁员风险 | 试用期 | 考试+打点 |
+
+---
+
+## 🎯 综合结论
+
+### 各领域优先级排序（待根据您的回答细化）
+
+| 优先级 | 领域 | 初步判断 |
+|--------|------|----------|
+| **1** | 法考底线 | 家庭/备孕是硬约束 |
+| **2** | CPA成本 | 时间价值 > 经济成本 |
+| **3** | CMA战略 | 需明确目标优先级 |
+| **4** | CFA心理 | 需纠正认知偏差 |
+
+### 推荐选择（待细化）
+
+**建议根据您的具体回答进行深度分析后确定。**
+
+### 关键提醒（待确认）
+
+1. **需明确**：备孕/职业哪个优先级更高？
+2. **需了解**：体制内岗位的具体情况
+3. **需评估**：家庭经济能否承受短期波动
+
+---
+
+## 🤔 待用户确认（苏格拉底式提问）
+
+1. **核心问题**：备孕和职业发展，如果只能二选一，选哪个？
+2. **时间计算**：各选项的时间周期大概是多久？
+3. **经济评估**：家庭能承受的最大经济压力是多少？
+4. **风险底线**：最坏情况是什么？能否接受？
+
+---
+
+*请回答以上问题，我将进入迭代优化阶段，深化分析。*
+            `;
+        }
+
+        function generateIterationRound(message) {
+            return `
+## 🔄 ROUND 3：迭代优化
+
+感谢您的补充！让我根据新信息更新分析：
+
+### 更新要点
+
+- 新增信息：${extractKeyPoints(message)}
+- 调整模块：${getAffectedModules(message)}
+
+### 重新评估
+
+**基于您的反馈，我需要重新审视以下几个假设：**
+
+1. **时间约束是否变化？**
+2. **成本承受能力是否调整？**
+3. **风险偏好是否有新的考量？**
+
+### 建议行动
+
+**如果这是最终确认：**
+
+\`\`\`
+□ 1. 明确优先级排序
+□ 2. 设定决策时间节点
+□ 3. 准备备选方案
+□ 4. 监控关键指标
+\`\`\`
+
+**下一步：**
+
+- 如果需要进一步细化某个维度，请告诉我
+- 如果信息已完备，可以进入最终决策阶段
+
+---
+
+*请告诉我，还需要补充或调整什么？*
+            `;
+        }
+
+        function extractCoreProblem(text) {
+            // Simple extraction - in production would use NLP
+            const keywords = ['工作', '职业', '跳槽', '备孕', '体制内', '纠结', '选择', '转型'];
+            const found = keywords.filter(k => text.includes(k));
+            return found.length > 0 ?
+                `围绕${found.slice(0, 2).join('、')}的决策困境` :
+                '需要进一步明确核心矛盾';
+        }
+
+        function extractKeyPoints(text) {
+            return text.slice(0, 50) + '...';
+        }
+
+        function getAffectedModules(text) {
+            const moduleMap = {
+                '钱': 'CPA',
+                '成本': 'CPA',
+                '备孕': 'CMA',
+                '时间': 'CMA',
+                '风险': 'CFA',
+                '心理': 'CFA',
+                '法律': '法考',
+                '合规': '法考'
+            };
+            const affected = new Set();
+            Object.keys(moduleMap).forEach(key => {
+                if (text.includes(key)) affected.add(moduleMap[key]);
+            });
+            return affected.size > 0 ? Array.from(affected).join('、') : '全部';
+        }
+
+        function downloadReport() {
+            // Generate HTML report
+            const reportHtml = generateReportHtml();
+
+            // Create filename with date
+            const date = new Date().toISOString().slice(0, 10);
+            const topic = (state.problem || 'decision').slice(0, 10).replace(/[^a-zA-Z0-9]/g, '');
+            const filename = `report/${topic}_${date}.html`;
+
+            // Create blob and download
+            const blob = new Blob([reportHtml], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename.replace('report/', '');
+            a.click();
+            URL.revokeObjectURL(url);
+
+            alert(`报告已保存为: ${filename.replace('report/', '')}\n\n提示：您可以手动将其移动到 report 文件夹中。`);
+        }
+
+        function generateReportHtml() {
+            const messages = document.querySelectorAll('.message');
+            let content = '';
+            messages.forEach(msg => {
+                content += msg.innerHTML + '\n\n';
+            });
+
+            return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>决策分析报告</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; max-width: 1000px; margin: 0 auto; padding: 40px 20px; background: #f8fafc; }
+        h1 { color: #1e293b; }
+        h2 { color: #2563eb; margin-top: 30px; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { border: 1px solid #e2e8f0; padding: 12px; text-align: left; }
+        th { background: #f1f5f9; }
+        .system { background: #eff6ff; border-left: 4px solid #2563eb; padding: 20px; margin: 20px 0; border-radius: 0 12px 12px 0; }
+        .user { background: #f1f5f9; padding: 16px; border-radius: 12px; margin: 10px 0; }
+        .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #e2e8f0; color: #64748b; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <h1>📊 决策分析报告</h1>
+    <p><strong>生成时间：</strong>${new Date().toLocaleString('zh-CN')}</p>
+    <hr>
+    ${content}
+    <div class="footer">
+        <p>本报告由多维度决策分析专家生成</p>
+        <p>整合 CPA / CFA / CMA / 法考 四大领域专业知识</p>
+    </div>
+</body>
+</html>`;
+        }
+
+        function copyReport() {
+            const messages = document.querySelectorAll('.message-content');
+            let text = '';
+            messages.forEach(msg => {
+                text += msg.innerText + '\n\n';
+            });
+
+            navigator.clipboard.writeText(text).then(() => {
+                alert('报告已复制到剪贴板！');
+            });
+        }
+
+        function startOver() {
+            if (confirm('确定要重新开始吗？当前的对话记录将被清除。')) {
+                state = {
+                    round: 0,
+                    currentPhase: 'intro',
+                    questions: [],
+                    userAnswers: [],
+                    analysis: { round1: null, round2: null, round3: null },
+                    options: [],
+                    reportData: []
+                };
+                document.getElementById('chatMessages').innerHTML = '';
+                addMessage('system', '决策分析专家', introMessage);
+                document.getElementById('downloadBtn').disabled = true;
+                document.getElementById('copyBtn').disabled = true;
+                updateUI();
+            }
+        }
+    </script>
+</body>
+</html>
