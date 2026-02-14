@@ -1,65 +1,86 @@
-# 决策分析专家 - 独立部署版
+# 决策分析专家 - 你的私人决策顾问
 
-## 快速部署到 Vercel
+## 🎯 你是否也这样纠结？
 
-### 方式一：命令行部署（推荐）
+- 跳槽还是留下？反复权衡却越想越乱
+- 买房还是租房？怕吃亏又怕后悔
+- 投资还是存钱？跟风操作总是被套
+- 选择太多，却不知如何下手
+
+**不再凭感觉做决定！**
+
+## 💡 决策分析专家 - 让专业帮你思考
+
+整合 **CPA / CFA / CMA / 法考** 四大领域专业知识，88个专业决策模型，帮你系统分析，理性决策。
+
+### 🎯 核心功能
+
+| 功能 | 说明 |
+|------|------|
+| 🔍 多维度分析 | 从财务、心理、法律、战略4个角度并行分析 |
+| 🧠 思维可视化 | 展示完整推理过程，不只给结论 |
+| 📊 88个专业模型 | NPV、机会成本、损失厌恶、SWOT... |
+| 💬 苏格拉底式提问 | 帮你澄清真正的需求 |
+| 📄 报告导出 | 生成可分享的分析报告 |
+
+### 👥 适用场景
+
+- 职业选择 / 跳槽评估
+- 投资决策 / 风险评估
+- 买房创业 / 商业判断
+- 婚姻家庭 / 生活权衡
+
+### 💰 完全免费
+
+无需注册，即开即用。
+
+---
+
+## 🚀 快速开始
+
+### 方式一：命令行部署
 
 ```bash
-# 1. 进入目录
 cd path/to/decision-assistant-pro
-
-# 2. 给脚本添加执行权限
 chmod +x deploy.sh
+./### 方式二：GitHub + Vercel
 
-# 3. 一键部署
-./deploy.sh
+1. 创建 GitHub 仓库，上传文件deploy.sh
 ```
 
-### 方式二：GitHub + Vercel 自动部署
 
-1. **创建 GitHub 仓库**
-   - 创建新仓库 `decision-assistant`
-   - 上传 `decision-assistant.html` 和 `vercel.json`
+2. 访问 https://vercel.com 连接仓库
+3. 自动部署，获取链接
 
-2. **连接 Vercel**
-   - 访问 https://vercel.com
-   - 点击 "Add New Project"
-   - 选择刚才创建的 GitHub 仓库
-   - 点击 "Deploy"
-
-3. **获取链接**
-   - 部署完成后，Vercel 会生成链接
-   - 如：`https://decision-assistant.vercel.app`
-
-### 方式三：手动上传
-
-1. 访问 https://vercel.com
-2. 点击 "Add New Project"
-3. 拖拽 `decision-assistant.html` 到上传区域
-4. 部署完成后获取链接
-
-## 本地使用
+### 本地使用
 
 ```bash
-# 双击 decision-assistant.html 直接在浏览器打开
-# 或
 open decision-assistant.html
 ```
 
-## 文件说明
+---
+
+## 📁 文件结构
 
 ```
 decision-assistant-pro/
 ├── decision-assistant.html   # 主应用（双击打开）
 ├── vercel.json              # Vercel 配置
 ├── deploy.sh                # 一键部署脚本
-└── README.md               # 说明文档
+├── README.md               # 说明文档
+├── cpa-knowledge.md        # CPA 知识库
+├── cfa-knowledge.md       # CFA 知识库
+├── cma-knowledge.md        # CMA 知识库
+├── law-exam-knowledge.md   # 法考知识库
+└── docs/                   # 产品文档（BRD/MRD/PRD）
 ```
 
-## 功能特点
+---
 
-- **88个专业决策模型**（CPA/CFA/CMA/法考）
-- 多维度决策分析
-- 苏格拉底式提问确认问题
-- 思维链可视化
-- HTML 报告生成与下载
+## 🌐 访问地址
+
+**https://decision-assistant-pro-byof.vercel.app**
+
+---
+
+**让每一个选择，都经得起推敲。**
